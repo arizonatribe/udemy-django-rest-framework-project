@@ -1,0 +1,13 @@
+#!/bin/sh
+
+GUNICORN=/usr/bin/gunicorn
+ROOT=/opt/udemy_app
+PID=/var/run/gunicorn.pid
+
+APP=udemy_app.wsgi:application
+
+if [ -f $PID ]; then rm $PID; fi
+
+cd $ROOT
+
+exec $GUNICORN -w $GUNICORN_NUM_WORKERS -b :$GUNICORN_PORT $([ $IS_LOCAL == 'true' ] && echo --reload) --pid=$PID $APP

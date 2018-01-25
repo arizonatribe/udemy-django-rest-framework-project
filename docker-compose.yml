@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+
+    postgres:
+        image: postgres:9.6
+        env_file:
+            - .env
+        ports:
+            - "5432:5432"
+        volumes:
+            - db:/var/lib/postgresql/data
+
+    api:
+        build: .
+        restart: always
+        name: udemy-app:latest
+        command: runsvdir -P /etc/service
+        volumes:
+            - ./src:/opt/udemy_app
+        env_file:
+            - .env
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres
+
+    nginx:
+        image: nginx:1.13
+        ports:
+            - "80:80"
+        volumes:
+            - ./server/nginx:/etc/nginx/conf.d
+        depends_on:
+            - api
+
+volumes:
+    db:
